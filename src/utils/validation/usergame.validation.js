@@ -3,6 +3,15 @@ const passwordComplexity = require('joi-password-complexity');
 const {responseValidationError} = require("../response.utils");
 const existsJoiValidation = require('../../helpers/existsJoiValidation.helper');
 
+const options = {
+    errors: {
+        wrap: {
+            label: ''
+        }
+    },
+    abortEarly: false
+};
+
 module.exports = {
     registerValidation: async (req, res, next) => {
         const schema = Joi.object({
@@ -22,7 +31,7 @@ module.exports = {
         });
 
         try {
-            await schema.validateAsync(req.body, {abortEarly: false});
+            await schema.validateAsync(req.body, options);
             next();
         } catch (err) {
             return responseValidationError(res, err);
@@ -34,7 +43,7 @@ module.exports = {
             password: Joi.string().required().label("Password"),
         });
 
-        const {error} = schema.validate(req.body, {abortEarly: false});
+        const {error} = schema.validate(req.body, options);
         if (error) return responseValidationError(res, error);
 
         next();
@@ -48,7 +57,7 @@ module.exports = {
                 .options({messages: {'any.only': '{{#label}} does not match'}})
         });
 
-        const {error} = schema.validate(req.body, {abortEarly: false});
+        const {error} = schema.validate(req.body, options);
         if (error) return responseValidationError(res, error);
 
         next();
