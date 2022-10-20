@@ -28,41 +28,43 @@ describe('Integration Testing - UserGameHistory API Territory', () => {
         token = res.body.data.user.token;
     });
 
-    it('[GET]   /api/histories : Should be error get all histories "Unauthorized"', async () => {
-        const res = await request(app)
-            .get('/api/histories')
-            .set({ 'Content-Type': 'application/json' });
+    describe('Integration Testing - Histories Testing', () => {
+        it('[GET]   /api/histories : Should be error get all histories "Unauthorized"', async () => {
+            const res = await request(app)
+                .get('/api/histories')
+                .set({ 'Content-Type': 'application/json' });
 
-        expect(res.statusCode).to.equal(401);
+            expect(res.statusCode).to.equal(401);
 
-        expect(res.body.status).to.be.equal(401);
-        expect(res.body.success).to.be.equal(false);
-        expect(res.body.message).to.be.equal('Unauthorized');
-    });
+            expect(res.body.status).to.be.equal(401);
+            expect(res.body.success).to.be.equal(false);
+            expect(res.body.message).to.be.equal('Unauthorized');
+        });
 
-    it('[GET]   /api/histories : Should be error get all histories "User not found"', async () => {
-        const res = await request(app)
-            .get('/api/histories')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
+        it('[GET]   /api/histories : Should be error get all histories "User not found"', async () => {
+            const res = await request(app)
+                .get('/api/histories')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
 
-        expect(res.statusCode).to.equal(404);
+            expect(res.statusCode).to.equal(404);
 
-        expect(res.body.status).to.be.equal(404);
-        expect(res.body.success).to.be.equal(false);
-        expect(res.body.message).to.be.equal('User not found');
-    });
+            expect(res.body.status).to.be.equal(404);
+            expect(res.body.success).to.be.equal(false);
+            expect(res.body.message).to.be.equal('User not found');
+        });
 
-    it('[GET]   /api/histories : Should be success get all histories "Success get all histories"', async () => {
-        const res = await request(app)
-            .get('/api/histories')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+        it('[GET]   /api/histories : Should be success get all histories "Success get all histories"', async () => {
+            const res = await request(app)
+                .get('/api/histories')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
-        expect(res.statusCode).to.equal(200);
+            expect(res.statusCode).to.equal(200);
 
-        expect(res.body.status).to.be.equal(200);
-        expect(res.body.success).to.be.equal(true);
-        expect(res.body.message).to.be.equal('Success get all histories');
-        expect(res.body).to.have.property('data');
+            expect(res.body.status).to.be.equal(200);
+            expect(res.body.success).to.be.equal(true);
+            expect(res.body.message).to.be.equal('Success get all histories');
+            expect(res.body).to.have.property('data');
+        });
     });
 
 });

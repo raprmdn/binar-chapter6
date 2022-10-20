@@ -74,627 +74,669 @@ describe('Integration Testing - UserGameBiodata / Characters API Territory', () 
 
     // Characters
 
-    it('[GET]   /api/characters : Should be get characters error "Unauthorized"', async () => {
-        const res = await request(app)
-            .get('/api/characters')
-            .set({ 'Content-Type': 'application/json' });
+    describe('Integration Testing - Characters Testing', () => {
+        it('[GET]   /api/characters : Should be get characters error "Unauthorized"', async () => {
+            const res = await request(app)
+                .get('/api/characters')
+                .set({ 'Content-Type': 'application/json' });
 
-        unauthorizedResponse(res);
-    });
+            unauthorizedResponse(res);
+        });
 
-    it('[GET]   /api/characters : Should be success get characters list "Characters retrieved successfully"', async () => {
-        const res = await request(app)
-            .get('/api/characters')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+        it('[GET]   /api/characters : Should be success get characters list "Characters retrieved successfully"', async () => {
+            const res = await request(app)
+                .get('/api/characters')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Characters retrieved successfully');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('total_characters');
-        expect(res.body.data).to.have.property('characters');
-        expect(Array.isArray(res.body.data.characters)).to.be.equal(true);
-    });
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Characters retrieved successfully');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('total_characters');
+            expect(res.body.data).to.have.property('characters');
+            expect(Array.isArray(res.body.data.characters)).to.be.equal(true);
+        });
 
-    it('[POST]  /api/characters : Should be error create character "Unauthorized"', async () => {
-        const res = await request(app)
-            .post('/api/characters')
-            .set({ 'Content-Type': 'application/json' })
-            .send({ 'nickname': 'raprmdn', 'race': 'Human', 'type': 'Fighter', 'gender': 'Male' });
+        it('[POST]  /api/characters : Should be error create character "Unauthorized"', async () => {
+            const res = await request(app)
+                .post('/api/characters')
+                .set({ 'Content-Type': 'application/json' })
+                .send({ 'nickname': 'raprmdn', 'race': 'Human', 'type': 'Fighter', 'gender': 'Male' });
 
-        unauthorizedResponse(res);
-    });
+            unauthorizedResponse(res);
+        });
 
-    it('[POST]  /api/characters : Should be error create character "The given data was invalid."', async () => {
-        const res = await request(app)
-            .post('/api/characters')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'nickname': '', 'race': '', 'type': '', 'gender': '' });
+        it('[POST]  /api/characters : Should be error create character "The given data was invalid."', async () => {
+            const res = await request(app)
+                .post('/api/characters')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'nickname': '', 'race': '', 'type': '', 'gender': '' });
 
-        unprocessableEntity(res);
-    });
+            unprocessableEntity(res);
+        });
 
-    it('[POST]  /api/characters : Should be error create character "Nickname already exists"', async () => {
-        const res = await request(app)
-            .post('/api/characters')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'nickname': 'raprmdn', 'race': 'Human', 'type': 'Fighter', 'gender': 'Male' });
+        it('[POST]  /api/characters : Should be error create character "Nickname already exists"', async () => {
+            const res = await request(app)
+                .post('/api/characters')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'nickname': 'raprmdn', 'race': 'Human', 'type': 'Fighter', 'gender': 'Male' });
 
-        unprocessableEntity(res);
-        expect(res.body.errors).to.have.property('nickname');
-        expect(res.body.errors.nickname).to.be.equal('Nickname already exists');
-    });
+            unprocessableEntity(res);
+            expect(res.body.errors).to.have.property('nickname');
+            expect(res.body.errors.nickname).to.be.equal('Nickname already exists');
+        });
 
-    it('[POST]  /api/characters : Should be success create character "Character created successfully"', async () => {
-        const res = await request(app)
-            .post('/api/characters')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'nickname': 'Lumiere', 'race': 'Human', 'type': 'Rogue', 'gender': 'Female' });
+        it('[POST]  /api/characters : Should be success create character "Character created successfully"', async () => {
+            const res = await request(app)
+                .post('/api/characters')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'nickname': 'Lumiere', 'race': 'Human', 'type': 'Rogue', 'gender': 'Female' });
 
-        expect(res.statusCode).to.equal(201);
+            expect(res.statusCode).to.equal(201);
 
-        expect(res.body.status).to.be.equal(201);
-        expect(res.body.success).to.be.equal(true);
-        expect(res.body.message).to.be.equal('Character created successfully');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('character');
+            expect(res.body.status).to.be.equal(201);
+            expect(res.body.success).to.be.equal(true);
+            expect(res.body.message).to.be.equal('Character created successfully');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('character');
+        });
     });
 
     // Change Nickname
 
-    it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "Unauthorized"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-nickname')
-            .set({ 'Content-Type': 'application/json' })
-            .send({ 'id': 1, 'nickname': 'Lumiere' });
+    describe('Integration Testing - Change Nickname Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "Unauthorized"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-nickname')
+                .set({ 'Content-Type': 'application/json' })
+                .send({ 'id': 1, 'nickname': 'Lumiere' });
 
-    it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "Character not found"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdnn/change-nickname')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'nickname': 'raprmdn' });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "Character not found"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdnn/change-nickname')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'nickname': 'raprmdn' });
 
-    it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "The given data was invalid."', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-nickname')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'nickname': '' });
+            notFoundResponse(res);
+        });
 
-        unprocessableEntity(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "The given data was invalid."', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-nickname')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'nickname': '' });
 
-    it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "Character id is not valid"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-nickname')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 100, 'nickname': 'raprmdnn' });
+            unprocessableEntity(res);
+        });
 
-        idNotValidReponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "Character id is not valid"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-nickname')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 100, 'nickname': 'raprmdnn' });
 
-    it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "You are not allowed to change this character\'s nickname"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-nickname')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
-            .send({ 'id': 1, 'nickname': 'raprmdnn' });
+            idNotValidReponse(res);
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s nickname');
-    });
+        it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "You are not allowed to change this character\'s nickname"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-nickname')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
+                .send({ 'id': 1, 'nickname': 'raprmdnn' });
 
-    it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "Nickname already exists"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-nickname')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'nickname': 'Lumiere' });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s nickname');
+        });
 
-        unprocessableEntity(res);
-        expect(res.body.errors).to.have.property('nickname');
-        expect(res.body.errors.nickname).to.be.equal('Nickname already exists');
-    });
+        it('[PATCH] /api/characters/:nickname/change-nickname : Should be error change nickname "Nickname already exists"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-nickname')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'nickname': 'Lumiere' });
 
-    it('[PATCH] /api/characters/:nickname/change-nickname : Should be success change nickname "Nickname changed successfully"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-nickname')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'nickname': 'raprmdn' });
+            unprocessableEntity(res);
+            expect(res.body.errors).to.have.property('nickname');
+            expect(res.body.errors.nickname).to.be.equal('Nickname already exists');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Nickname changed successfully');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('id');
-        expect(res.body.data).to.have.property('nickname');
+        it('[PATCH] /api/characters/:nickname/change-nickname : Should be success change nickname "Nickname changed successfully"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-nickname')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'nickname': 'raprmdn' });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Nickname changed successfully');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('id');
+            expect(res.body.data).to.have.property('nickname');
+        });
+
     });
 
     // Join Guild
 
-    it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "Unauthorized"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-guild')
-            .set({ 'Content-Type': 'application/json' })
-            .send({ 'id': 1, 'guild': 'Coalition' });
+    describe('Integration Testing - Join Guild Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "Unauthorized"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-guild')
+                .set({ 'Content-Type': 'application/json' })
+                .send({ 'id': 1, 'guild': 'Coalition' });
 
-    it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "Character not found"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdnn/join-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'guild': 'Coalition' });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "Character not found"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdnn/join-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'guild': 'Coalition' });
 
-    it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "The given data was invalid."', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': '', 'guild': '' });
+            notFoundResponse(res);
+        });
 
-        unprocessableEntity(res);
-    });
+        it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "The given data was invalid."', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': '', 'guild': '' });
 
-    it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "Character id is not valid"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 100, 'guild': 'Coalition' });
+            unprocessableEntity(res);
+        });
 
-        idNotValidReponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "Character id is not valid"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 100, 'guild': 'Coalition' });
 
-    it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "You are not allowed to change this character\'s guild"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
-            .send({ 'id': 1, 'guild': 'Coalition' });
+            idNotValidReponse(res);
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s guild');
-    });
+        it('[PATCH] /api/characters/:nickname/join-guild : Should be error join guild "You are not allowed to change this character\'s guild"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
+                .send({ 'id': 1, 'guild': 'Coalition' });
 
-    it('[PATCH] /api/characters/:nickname/join-guild : Should be success join guild "Joined guild successfully"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'guild': 'Coalition' });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s guild');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Joined guild successfully');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('id');
-        expect(res.body.data).to.have.property('nickname');
-        expect(res.body.data).to.have.property('guild');
+        it('[PATCH] /api/characters/:nickname/join-guild : Should be success join guild "Joined guild successfully"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'guild': 'Coalition' });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Joined guild successfully');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('id');
+            expect(res.body.data).to.have.property('nickname');
+            expect(res.body.data).to.have.property('guild');
+        });
+
     });
 
     // Change Guild
 
-    it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "Unauthorized"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-guild')
-            .set({ 'Content-Type': 'application/json' })
-            .send({ 'id': 1, 'guild': 'MixMax' });
+    describe('Integration Testing - Change Guild Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "Unauthorized"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-guild')
+                .set({ 'Content-Type': 'application/json' })
+                .send({ 'id': 1, 'guild': 'MixMax' });
 
-    it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "Character not found"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdnn/change-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'guild': 'MixMax' });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "Character not found"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdnn/change-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'guild': 'MixMax' });
 
-    it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "The given data was invalid."', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': '', 'guild': '' });
+            notFoundResponse(res);
+        });
 
-        unprocessableEntity(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "The given data was invalid."', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': '', 'guild': '' });
 
-    it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "Character id is not valid"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 100, 'guild': 'MixMax' });
+            unprocessableEntity(res);
+        });
 
-        idNotValidReponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "Character id is not valid"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 100, 'guild': 'MixMax' });
 
-    it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "You are not allowed to change this character\'s guild"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
-            .send({ 'id': 1, 'guild': 'MixMax' });
+            idNotValidReponse(res);
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s guild');
-    });
+        it('[PATCH] /api/characters/:nickname/change-guild : Should be error change guild "You are not allowed to change this character\'s guild"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
+                .send({ 'id': 1, 'guild': 'MixMax' });
 
-    it('[PATCH] /api/characters/:nickname/change-guild : Should be success change guild "Changed guild successfully"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'guild': 'MixMax' });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s guild');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Changed guild successfully');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('id');
-        expect(res.body.data).to.have.property('nickname');
-        expect(res.body.data).to.have.property('guild');
+        it('[PATCH] /api/characters/:nickname/change-guild : Should be success change guild "Changed guild successfully"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'guild': 'MixMax' });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Changed guild successfully');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('id');
+            expect(res.body.data).to.have.property('nickname');
+            expect(res.body.data).to.have.property('guild');
+        });
+
     });
 
     // Leave Guild
 
-    it('[DELETE] /api/characters/:nickname/leave-guild : Should be error leave guild "Unauthorized"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/raprmdn/leave-guild')
-            .set({ 'Content-Type': 'application/json' });
+    describe('Integration Testing - Leave Guild Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[DELETE] /api/characters/:nickname/leave-guild : Should be error leave guild "Unauthorized"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/raprmdn/leave-guild')
+                .set({ 'Content-Type': 'application/json' });
 
-    it('[DELETE] /api/characters/:nickname/leave-guild : Should be error leave guild "Character not found"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/raprmdnn/leave-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[DELETE] /api/characters/:nickname/leave-guild : Should be error leave guild "Character not found"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/raprmdnn/leave-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
-    it('[DELETE] /api/characters/:nickname/leave-guild : Should be error leave guild "Character is not in any guild"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/Lumiere/leave-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            notFoundResponse(res);
+        });
 
-        expect(res.statusCode).to.equal(400);
+        it('[DELETE] /api/characters/:nickname/leave-guild : Should be error leave guild "Character is not in any guild"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/Lumiere/leave-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
-        expect(res.body.status).to.be.equal(400);
-        expect(res.body.success).to.be.equal(false);
-        expect(res.body.message).to.be.equal('Character is not in any guild');
-    });
+            expect(res.statusCode).to.equal(400);
 
-    it('[DELETE] /api/characters/:nickname/leave-guild : Should be error leave guild "You are not allowed to change this character\'s guild"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/raprmdn/leave-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
+            expect(res.body.status).to.be.equal(400);
+            expect(res.body.success).to.be.equal(false);
+            expect(res.body.message).to.be.equal('Character is not in any guild');
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s guild');
-    });
+        it('[DELETE] /api/characters/:nickname/leave-guild : Should be error leave guild "You are not allowed to change this character\'s guild"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/raprmdn/leave-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
 
-    it('[DELETE] /api/characters/:nickname/leave-guild : Should be success leave guild "Left guild successfully"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/raprmdn/leave-guild')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s guild');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Left guild successfully');
+        it('[DELETE] /api/characters/:nickname/leave-guild : Should be success leave guild "Left guild successfully"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/raprmdn/leave-guild')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Left guild successfully');
+        });
+
     });
 
     // Join Family
 
-    it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "Unauthorized"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-family')
-            .set({ 'Content-Type': 'application/json' })
-            .send({ 'id': 1, 'family': 'Ragnarok' });
+    describe('Integration Testing - Join Family Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "Unauthorized"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-family')
+                .set({ 'Content-Type': 'application/json' })
+                .send({ 'id': 1, 'family': 'Ragnarok' });
 
-    it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "Character not found"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdnn/join-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'family': 'Ragnarok' });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "Character not found"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdnn/join-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'family': 'Ragnarok' });
 
-    it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "The given data was invalid."', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': '', 'family': '' });
+            notFoundResponse(res);
+        });
 
-        unprocessableEntity(res);
-    });
+        it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "The given data was invalid."', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': '', 'family': '' });
 
-    it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "Character id is not valid"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 100, 'family': 'Ragnarok' });
+            unprocessableEntity(res);
+        });
 
-        idNotValidReponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "Character id is not valid"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 100, 'family': 'Ragnarok' });
 
-    it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "You are not allowed to change this character\'s family"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
-            .send({ 'id': 1, 'family': 'Ragnarok' });
+            idNotValidReponse(res);
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s family');
-    });
+        it('[PATCH] /api/characters/:nickname/join-family : Should be error join family "You are not allowed to change this character\'s family"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
+                .send({ 'id': 1, 'family': 'Ragnarok' });
 
-    it('[PATCH] /api/characters/:nickname/join-family : Should be success join family "Joined family successfully"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/join-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'family': 'Ragnarok' });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s family');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Joined family successfully');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('id');
-        expect(res.body.data).to.have.property('nickname');
-        expect(res.body.data).to.have.property('family');
+        it('[PATCH] /api/characters/:nickname/join-family : Should be success join family "Joined family successfully"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/join-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'family': 'Ragnarok' });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Joined family successfully');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('id');
+            expect(res.body.data).to.have.property('nickname');
+            expect(res.body.data).to.have.property('family');
+        });
+
     });
 
     // Change Family
 
-    it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "Unauthorized"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-family')
-            .set({ 'Content-Type': 'application/json' })
-            .send({ 'id': 1, 'family': 'Crusade' });
+    describe('Integration Testing - Change Family Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "Unauthorized"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-family')
+                .set({ 'Content-Type': 'application/json' })
+                .send({ 'id': 1, 'family': 'Crusade' });
 
-    it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "Character not found"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdnn/change-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'family': 'Crusade' });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "Character not found"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdnn/change-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'family': 'Crusade' });
 
-    it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "The given data was invalid."', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': '', 'family': '' });
+            notFoundResponse(res);
+        });
 
-        unprocessableEntity(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "The given data was invalid."', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': '', 'family': '' });
 
-    it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "Character id is not valid"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 100, 'family': 'Crusade' });
+            unprocessableEntity(res);
+        });
 
-        idNotValidReponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "Character id is not valid"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 100, 'family': 'Crusade' });
 
-    it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "You are not allowed to change this character\'s family"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
-            .send({ 'id': 1, 'family': 'Ragnarok' });
+            idNotValidReponse(res);
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s family');
-    });
+        it('[PATCH] /api/characters/:nickname/change-family : Should be error change family "You are not allowed to change this character\'s family"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
+                .send({ 'id': 1, 'family': 'Ragnarok' });
 
-    it('[PATCH] /api/characters/:nickname/change-family : Should be success change family "Changed family successfully"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/change-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'family': 'Crusade' });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s family');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Changed family successfully');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('id');
-        expect(res.body.data).to.have.property('nickname');
-        expect(res.body.data).to.have.property('family');
+        it('[PATCH] /api/characters/:nickname/change-family : Should be success change family "Changed family successfully"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/change-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'family': 'Crusade' });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Changed family successfully');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('id');
+            expect(res.body.data).to.have.property('nickname');
+            expect(res.body.data).to.have.property('family');
+        });
+
     });
 
     // Leave Family
 
-    it('[DELETE] /api/characters/:nickname/leave-family : Should be error leave family "Unauthorized"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/raprmdn/leave-family')
-            .set({ 'Content-Type': 'application/json' });
+    describe('Integration Testing - Leave Family Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[DELETE] /api/characters/:nickname/leave-family : Should be error leave family "Unauthorized"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/raprmdn/leave-family')
+                .set({ 'Content-Type': 'application/json' });
 
-    it('[DELETE] /api/characters/:nickname/leave-family : Should be error leave family "Character not found"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/raprmdnn/leave-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[DELETE] /api/characters/:nickname/leave-family : Should be error leave family "Character not found"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/raprmdnn/leave-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
-    it('[DELETE] /api/characters/:nickname/leave-family : Should be error leave family "Character is not in any family"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/Lumiere/leave-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            notFoundResponse(res);
+        });
 
-        expect(res.statusCode).to.equal(400);
+        it('[DELETE] /api/characters/:nickname/leave-family : Should be error leave family "Character is not in any family"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/Lumiere/leave-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
-        expect(res.body.status).to.be.equal(400);
-        expect(res.body.success).to.be.equal(false);
-        expect(res.body.message).to.be.equal('Character is not in any family');
-    });
+            expect(res.statusCode).to.equal(400);
 
-    it('[DELETE] /api/characters/:nickname/leave-family : Should be error leave family "You are not allowed to change this character\'s family"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/raprmdn/leave-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
+            expect(res.body.status).to.be.equal(400);
+            expect(res.body.success).to.be.equal(false);
+            expect(res.body.message).to.be.equal('Character is not in any family');
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s family');
-    });
+        it('[DELETE] /api/characters/:nickname/leave-family : Should be error leave family "You are not allowed to change this character\'s family"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/raprmdn/leave-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
 
-    it('[DELETE] /api/characters/:nickname/leave-family : Should be success leave family "Left family successfully"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/raprmdn/leave-family')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s family');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Left family successfully');
+        it('[DELETE] /api/characters/:nickname/leave-family : Should be success leave family "Left family successfully"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/raprmdn/leave-family')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Left family successfully');
+        });
+
     });
 
     // Gained Experience
 
-    it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "Unauthorized"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/gained-exp')
-            .set({ 'Content-Type': 'application/json' })
-            .send({ 'id': 1, 'gained_exp': 35000 });
+    describe('Integration Testing - Gained Experience Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "Unauthorized"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/gained-exp')
+                .set({ 'Content-Type': 'application/json' })
+                .send({ 'id': 1, 'gained_exp': 35000 });
 
-    it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "Character not found"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdnn/gained-exp')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'gained_exp': 35000 });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "Character not found"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdnn/gained-exp')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'gained_exp': 35000 });
 
-    it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "The given data was invalid."', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/gained-exp')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'gained_exp': 0 });
+            notFoundResponse(res);
+        });
 
-        unprocessableEntity(res);
-    });
+        it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "The given data was invalid."', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/gained-exp')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'gained_exp': 0 });
 
-    it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "Character id is not valid"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/gained-exp')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 100, 'gained_exp': 35000 });
+            unprocessableEntity(res);
+        });
 
-        idNotValidReponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "Character id is not valid"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/gained-exp')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 100, 'gained_exp': 35000 });
 
-    it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "You are not allowed to change this character\'s exp"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/gained-exp')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
-            .send({ 'id': 1, 'gained_exp': 35000 });
+            idNotValidReponse(res);
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s exp');
-    });
+        it('[PATCH] /api/characters/:nickname/gained-exp : Should be error gained exp "You are not allowed to change this character\'s exp"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/gained-exp')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
+                .send({ 'id': 1, 'gained_exp': 35000 });
 
-    it('[PATCH] /api/characters/:nickname/gained-exp : Should be success gained exp "Character gained exp"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/gained-exp')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
-            .send({ 'id': 1, 'gained_exp': 35000 });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s exp');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Character gained exp');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('id');
-        expect(res.body.data).to.have.property('nickname');
-        expect(res.body.data).to.have.property('gained_exp');
-        expect(res.body.data).to.have.property('exp');
+        it('[PATCH] /api/characters/:nickname/gained-exp : Should be success gained exp "Character gained exp"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/gained-exp')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+                .send({ 'id': 1, 'gained_exp': 35000 });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Character gained exp');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('id');
+            expect(res.body.data).to.have.property('nickname');
+            expect(res.body.data).to.have.property('gained_exp');
+            expect(res.body.data).to.have.property('exp');
+        });
+
     });
 
     // Level Up
 
-    it('[PATCH] /api/characters/:nickname/level-up : Should be error level up "Unauthorized"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/level-up')
-            .set({ 'Content-Type': 'application/json' });
+    describe('Integration Testing - Level Up Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/level-up : Should be error level up "Unauthorized"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/level-up')
+                .set({ 'Content-Type': 'application/json' });
 
-    it('[PATCH] /api/characters/:nickname/level-up : Should be error level up "Character not found"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdnn/level-up')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[PATCH] /api/characters/:nickname/level-up : Should be error level up "Character not found"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdnn/level-up')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
-    it('[PATCH] /api/characters/:nickname/level-up : Should be error gained exp "You are not allowed to change this character\'s level"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/level-up')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
+            notFoundResponse(res);
+        });
 
-        idNotAllowedResponse(res);
-        expect(res.body.message).to.be.equal('You are not allowed to change this character\'s level');
-    });
+        it('[PATCH] /api/characters/:nickname/level-up : Should be error gained exp "You are not allowed to change this character\'s level"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/level-up')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
 
-    it('[PATCH] /api/characters/:nickname/level-up : Should be success level up "Character leveled up"', async () => {
-        const res = await request(app)
-            .patch('/api/characters/raprmdn/level-up')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to change this character\'s level');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Character leveled up');
-        expect(res.body).to.have.property('data');
-        expect(res.body.data).to.have.property('id');
-        expect(res.body.data).to.have.property('nickname');
-        expect(res.body.data).to.have.property('level');
+        it('[PATCH] /api/characters/:nickname/level-up : Should be success level up "Character leveled up"', async () => {
+            const res = await request(app)
+                .patch('/api/characters/raprmdn/level-up')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Character leveled up');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.have.property('id');
+            expect(res.body.data).to.have.property('nickname');
+            expect(res.body.data).to.have.property('level');
+        });
+
     });
 
     // Delete Character
 
-    it('[DELETE] /api/characters/:nickname/delete-character : Should be error delete character "Unauthorized"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/Lumiere/delete-character')
-            .set({ 'Content-Type': 'application/json' });
+    describe('Integration Testing - Delete Character Testing', () => {
 
-        unauthorizedResponse(res);
-    });
+        it('[DELETE] /api/characters/:nickname/delete-character : Should be error delete character "Unauthorized"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/Lumiere/delete-character')
+                .set({ 'Content-Type': 'application/json' });
 
-    it('[DELETE] /api/characters/:nickname/delete-character : Should be error delete character "Character not found"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/lumiere/delete-character')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            unauthorizedResponse(res);
+        });
 
-        notFoundResponse(res);
-    });
+        it('[DELETE] /api/characters/:nickname/delete-character : Should be error delete character "Character not found"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/lumiere/delete-character')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
-    it('[DELETE] /api/characters/:nickname/delete-character : Should be error delete character "User not found"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/Lumiere/delete-character')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
+            notFoundResponse(res);
+        });
 
-        expect(res.statusCode).to.be.equal(404);
+        it('[DELETE] /api/characters/:nickname/delete-character : Should be error delete character "User not found"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/Lumiere/delete-character')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
 
-        expect(res.status).to.be.equal(404);
-        expect(res.body).to.have.property('message');
-        expect(res.body.message).to.be.equal('User not found');
-    });
+            expect(res.statusCode).to.be.equal(404);
 
-    it('[DELETE] /api/characters/:nickname/delete-character : Should be success delete character "Character deleted successfully"', async () => {
-        const res = await request(app)
-            .delete('/api/characters/Lumiere/delete-character')
-            .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+            expect(res.status).to.be.equal(404);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.be.equal('User not found');
+        });
 
-        okResponse(res);
-        expect(res.body.message).to.be.equal('Character deleted successfully');
+        it('[DELETE] /api/characters/:nickname/delete-character : Should be success delete character "Character deleted successfully"', async () => {
+            const res = await request(app)
+                .delete('/api/characters/Lumiere/delete-character')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+
+            okResponse(res);
+            expect(res.body.message).to.be.equal('Character deleted successfully');
+        });
+
     });
 
 });
