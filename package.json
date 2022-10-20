@@ -13,7 +13,10 @@
   "jest": {
     "setupFilesAfterEnv": [
       "./src/config/suiteSetup.config.js"
-    ]
+    ],
+    "verbose": true,
+    "silent": true,
+    "testTimeout": 5000
   },
   "keywords": [
     "NodeJS",
