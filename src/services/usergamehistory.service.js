@@ -1,10 +1,9 @@
-const {UserGame} = require('../models');
-const {response} = require("../utils/response.utils");
+const { UserGame } = require('../models');
 
 module.exports = {
     getAll: async (user) => {
         const auth = await UserGame.findByPk(user.id);
-        if (!auth) return response(404, false, 'User not found');
+        if (!auth) throw { status: 404, message: 'User not found' };
 
         return auth.getHistories({
             order: [
