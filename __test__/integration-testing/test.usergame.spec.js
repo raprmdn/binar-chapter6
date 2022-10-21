@@ -1,6 +1,7 @@
 const request = require('supertest');
 const chai = require('chai');
 const app = require('../../src/config/server.config');
+const jwt = require('jsonwebtoken');
 
 const expect = chai.expect;
 
@@ -147,6 +148,20 @@ describe('Integration Testing - UserGame API Territory', () => {
 
     describe('Integration Testing - Authenticated User Test', () => {
 
+        it('[GET]   /api/auth/me : Should be get user error "User not found"', async () => {
+            const payload = { id: 1000, username: 'raprmdns', email: 'raprmdns@email.com' };
+            const fakeJWT = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '15m' });
+            const res = await request(app)
+                .get('/api/auth/me')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` });
+
+            expect(res.statusCode).to.be.equal(404);
+
+            expect(res.body.status).to.be.equal(404);
+            expect(res.body.success).to.be.equal(false);
+            expect(res.body.message).to.be.equal('User not found');
+        });
+
         it('[GET]   /api/auth/me : Should be get user error "Unauthorized"', async () => {
             const res = await request(app)
                 .get('/api/auth/me')
@@ -185,6 +200,21 @@ describe('Integration Testing - UserGame API Territory', () => {
                 .send({ 'current_password': '', 'new_password': '', 'password_confirmation': '' });
 
             unprocessableEntity(res);
+        });
+
+        it('[PATCH]   /api/auth/change-password : Should be change password error "User not found"', async () => {
+            const payload = { id: 1000, username: 'raprmdns', email: 'raprmdns@email.com' };
+            const fakeJWT = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '15m' });
+            const res = await request(app)
+                .patch('/api/auth/change-password')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${fakeJWT}` })
+                .send({ 'current_password': 'Abc123456', 'new_password': 'Abc123456!', 'password_confirmation': 'Abc123456!' });
+
+            expect(res.statusCode).to.be.equal(404);
+
+            expect(res.body.status).to.be.equal(404);
+            expect(res.body.success).to.be.equal(false);
+            expect(res.body.message).to.be.equal('User not found');
         });
 
         it('[PATCH] /api/auth/change-password : Should be change password error "Wrong current password"', async () => {

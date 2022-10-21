@@ -23,7 +23,7 @@ module.exports = {
             const user = await UserGameService.me(req.user);
             return response(res, 200, true, "User retrieved successfully", { user });
         } catch (err) {
-            return response(res, 500, false, err.message);
+            return response(res, err?.status || 500, false, err.message);
         }
     },
     changePassword: async (req, res) => {
