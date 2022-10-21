@@ -728,6 +728,21 @@ describe('Integration Testing - UserGameBiodata / Characters API Territory', () 
             expect(res.body.message).to.be.equal('User not found');
         });
 
+        it('[DELETE] /api/characters/:nickname/delete-character : Should be error delete character "You are not allowed to delete this character"', async () => {
+            const payload = {
+                id: 2,
+                username: 'raprmdnn',
+                email: 'raprmdnn@gmail.com',
+            };
+            const notCurrentUserJWT = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '15m' });
+            const res = await request(app)
+                .delete('/api/characters/Lumiere/delete-character')
+                .set({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${notCurrentUserJWT}` });
+
+            idNotAllowedResponse(res);
+            expect(res.body.message).to.be.equal('You are not allowed to delete this character');
+        });
+
         it('[DELETE] /api/characters/:nickname/delete-character : Should be success delete character "Character deleted successfully"', async () => {
             const res = await request(app)
                 .delete('/api/characters/Lumiere/delete-character')

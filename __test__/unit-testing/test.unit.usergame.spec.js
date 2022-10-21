@@ -72,6 +72,19 @@ describe('Unit Testing - UserGame / User API Territory', () => {
 
     describe('Unit Testing - Authenticated User / Me Testing', () => {
 
+        it('Should be authenticated user error when user service throw error', async () => {
+            const req = { user: { id: 1 } };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameService.me.mockImplementation(() => {
+                throw { status: 500, message: 'Internal Server Error' };
+            });
+            await UserGameController.me(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ status: 500, success: false, message: 'Internal Server Error' });
+        });
+
         it('Should be success when user service return user', async () => {
             const mockUser = { id: 1, name: 'Test', username: 'test', email: 'test@email.com', token: 'token' };
             const req = { body: {} };
