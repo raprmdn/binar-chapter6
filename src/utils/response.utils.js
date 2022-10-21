@@ -8,7 +8,7 @@ const errorsCustomMessage = (errors) => {
 module.exports = {
     response: (res, status, success, message, data) => {
         const result = {};
-        result.status = status || 200;
+        result.status = status;
         result.success = success;
         result.message = message;
         result.data = data;

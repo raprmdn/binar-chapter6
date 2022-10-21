@@ -35,7 +35,20 @@ describe('Integration Testing - UserGame API Territory', () => {
             unprocessableEntity(res);
         });
 
-        it('[POST]  /api/auth/login : Should be login error "These credentials do not match our records"', async () => {
+        it('[POST]  /api/auth/login : Should be login error "These credentials do not match our records" User doesnt exists', async () => {
+            const res = await request(app)
+                .post('/api/auth/login')
+                .set({ 'Content-Type': 'application/json' })
+                .send({ 'email': 'raprmdnnn@gmail.com', 'password': 'Abc123456!' });
+
+            expect(res.statusCode).to.be.equal(404);
+
+            expect(res.body.status).to.be.equal(404);
+            expect(res.body.success).to.be.equal(false);
+            expect(res.body.message).to.be.equal('These credentials do not match our records');
+        });
+
+        it('[POST]  /api/auth/login : Should be login error "These credentials do not match our records" Password doesn\'t match', async () => {
             const res = await request(app)
                 .post('/api/auth/login')
                 .set({ 'Content-Type': 'application/json' })
