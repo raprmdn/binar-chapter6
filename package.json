@@ -4,7 +4,7 @@
   "description": "ExpressJS - API - CRUD - Postman Documentation",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest",
+    "test": "cross-env NODE_ENV=test jest --coverage --watchAll=false",
     "pretest": "cross-env NODE_ENV=test npm run db:reset",
     "db:reset": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",
     "dev": "nodemon src/index.js",
