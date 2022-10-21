@@ -1,6 +1,6 @@
 ## Binar Chapter 6 - Challenge
 
-- ExpressJS - Integration Test - CI/CD
+- ExpressJS - Unit Test & Integration Test - CI/CD
 
 ## Postman Collection API Documentation
 Generate Postman Collection API:
@@ -13,7 +13,7 @@ Optional:
 then import file `collection.json` to Postman.
 
 Online Documentation:
-- [Postman Collection API Documentation](https://documenter.getpostman.com/view/13401148/2s83zdxShm)
+- [Postman Collection API Documentation](https://documenter.getpostman.com/view/13401148/2s847MsBWh)
 
 ## Simple Docs
 
