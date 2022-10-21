@@ -10,12 +10,12 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
     });
 
     describe('Unit Testing - Get Characters', () => {
-        it('Should be get characters error when user service throw error Internal Server Error', async () => {
+        it('Should be get characters error when user biodata service throw error "Internal Server Error"', async () => {
             const req = { params: { id: 1 } };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
             UserGameBiodataService.getUserCharacters.mockImplementation(() => {
-                throw { status: 500, message: 'Internal Server Error' };
+                throw { message: 'Internal Server Error' };
             })
             await UserGameBiodataController.getUserCharacters(req, res);
 
@@ -25,12 +25,12 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
     });
 
     describe('Unit Testing - Create Character', () => {
-        it('Should be error create character when user service throw error Internal Server Error', async () => {
+        it('Should be error create character when user biodata service throw error "Internal Server Error"', async () => {
             const req = { body: {} };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
             UserGameBiodataService.createNewCharacter.mockImplementation(() => {
-                throw { status: 500, message: 'Internal Server Error' };
+                throw { message: 'Internal Server Error' };
             });
             await UserGameBiodataController.createNewCharacter(req, res);
 
@@ -73,6 +73,19 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
     });
 
     describe('Unit Testing - Change Character Nickname', () => {
+        it('Should be error when user biodata service throw error "Internal Server Erro"r', async () => {
+            const req = { body: {} };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.changeNickname.mockImplementation(() => {
+                throw { message: "Internal Server Error" };
+            });
+            await UserGameBiodataController.changeNickname(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ status: 500, success: false, message: 'Internal Server Error' });
+        });
+
         it('Should be error when user biodata service throw error Character not found', async () => {
             const req = { body: {} };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -104,6 +117,23 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
     });
 
     describe('Unit Testing - Join Guild', () => {
+        it('Should be error join guild when user biodata service throw error "Internal Server Err"or', async () => {
+            const req = { params: {}, body: {} };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.joinOrChangeGuild.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.joinGuild(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error',
+            });
+        });
+
         it('Should be success join guild when user biodata service return updated character', async () => {
             const req = { params: { nickname: 'raprmdn' }, body: { guild: 'Coalition' } };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -118,10 +148,28 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
                 message: 'Joined guild successfully',
                 data: {  id: 1, nickname: 'raprmdn', guild: 'Coalition' }
             });
-        })
+        });
+
     });
 
     describe('Unit Testing - Change Guild', () => {
+        it('Should be error change guild when user biodata service throw error "Internal Server Erro"r', async () => {
+            const req = { params: {}, body: {} };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.joinOrChangeGuild.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.changeGuild(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error',
+            });
+        });
+
         it('Should be success change guild when user biodata service return updated character', async () => {
             const req = { params: { nickname: 'raprmdn' }, body: { guild: 'MixMax' } };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -136,10 +184,28 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
                 message: 'Changed guild successfully',
                 data: {  id: 1, nickname: 'raprmdn', guild: 'MixMax' }
             });
-        })
+        });
+
     });
 
     describe('Unit Testing - Leave Guild', () => {
+        it('Should be error leave guild when user biodata service throw "Internal Server Error"', async () => {
+            const req = { params: {} };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.leaveGuild.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.leaveGuild(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error',
+            });
+        });
+
         it('Should be success leave guild when user biodata service return updated character', async () => {
             const req = {params: {nickname: 'raprmdn'}};
             const res = {status: jest.fn().mockReturnThis(), json: jest.fn()};
@@ -154,9 +220,28 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
                 message: 'Left guild successfully',
             });
         });
+
     });
 
     describe('Unit Testing - Join Family', () => {
+
+        it('Should be error join family when user biodata service throw "Internal Server Error"', async () => {
+            const req = { params: {}, body: {} };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.joinOrChangeFamily.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.joinFamily(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error',
+            });
+        });
+
         it('Should be success join family when user biodata service return updated character', async () => {
             const req = { params: { nickname: 'raprmdn' }, body: { family: 'Ragnarok' } };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -171,10 +256,28 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
                 message: 'Joined family successfully',
                 data: {  id: 1, nickname: 'raprmdn', family: 'Ragnarok' }
             });
-        })
+        });
+
     });
 
     describe('Unit Testing - Change Family', () => {
+        it('Should be error change family when user biodata service throw error "Internal Server Error"', async () => {
+            const req = { params: {}, body: {} };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.joinOrChangeFamily.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.changeFamily(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error',
+            });
+        });
+
         it('Should be success change family when user biodata service return updated character', async () => {
             const req = { params: { nickname: 'raprmdn' }, body: { family: 'Crusade' } };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -189,10 +292,28 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
                 message: 'Changed family successfully',
                 data: {  id: 1, nickname: 'raprmdn', family: 'Crusade' }
             });
-        })
+        });
     });
 
     describe('Unit Testing - Leave Family', () => {
+
+        it('Should be error leave family when user biodata service throw error "Internal Server Error"', async () => {
+            const req = { params: {} };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn()};
+
+            UserGameBiodataService.leaveFamily.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.leaveFamily(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error',
+            });
+        });
+
         it('Should be success leave family when user biodata service return updated character', async () => {
             const req = { params: { nickname: 'raprmdn' } };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn()};
@@ -207,9 +328,27 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
                 message: 'Left family successfully',
             });
         });
+
     });
 
     describe('Unit Testing - Gained Experience', () => {
+        it('Should be error gained exp when user biodata service throw error "Internal Server Error"', async () => {
+            const req = { params: {}, body: {}};
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.gainedExp.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.gainedExp(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error',
+            });
+        });
+
         it('Should be success gained exp when user biodata service return updated character', async () => {
             const req = { params: { nickname: 'raprmdn' }, body: { id: 1, gained_exp: 35000 }};
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -225,9 +364,27 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
                 data: { id: 1, nickname: 'raprmdn', gained_exp: 35000, exp: 50000 }
             });
         });
+
     });
 
     describe('Unit Testing - Level Up', () => {
+        it('Should be error level up when user biodata service throw error "Internal Server Error"', async () => {
+            const req = { params: {}, body: {}};
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.levelUp.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.levelUp(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error',
+            });
+        });
+
         it('Should be success level up when user biodata service return updated character', async () => {
             const req = { params: { nickname: 'raprmdn' }, body: {}};
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -243,9 +400,27 @@ describe('Unit Testing - UserGameBiodata / Characters API Territory', () => {
                 data: { id: 1, nickname: 'raprmdn', level: 1 }
             });
         });
+
     });
 
     describe('Unit Testing - Delete Character', () => {
+        it('Should be error delete character when user biodata service throw error "Internal Server Error"', async () => {
+            const req = { params: {}};
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameBiodataService.deleteCharacter.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameBiodataController.deleteCharacter(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                status: 500,
+                success: false,
+                message: 'Internal Server Error'
+            });
+        });
+
         it('Should be success delete character when user biodata service return deleted character', async () => {
             const req = { params: { nickname: 'raprmdn' }};
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };

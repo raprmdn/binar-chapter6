@@ -10,6 +10,20 @@ describe('Unit Testing - UserGameBiodata / Histories API Territory', () => {
     });
 
     describe('Unit Testing - Get Histories', () => {
+
+        it('Should be error when the user game history service throw error "Internal Server Error"', async () => {
+            const req = { body: {} };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameHistoryService.getAll.mockImplementation(() => {
+                throw { message: 'Internal Server Error' };
+            });
+            await UserGameHistoryController.getAll(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ status: 500, success: false, message: 'Internal Server Error' });
+        });
+
         it('Should be success get all histories when the service return user histories', async () => {
             const req = { body: {} };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -79,5 +93,6 @@ describe('Unit Testing - UserGameBiodata / Histories API Territory', () => {
                 data: histories
             });
         });
+
     });
 });

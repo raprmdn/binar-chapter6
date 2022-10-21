@@ -42,7 +42,7 @@ describe('Unit Testing - UserGame / User API Territory', () => {
 
     describe('Unit Testing - Login Testing', () => {
 
-        it('Should be login error when user service throw error', async () => {
+        it('Should be login error when user service throw error "These credentials do not match our records"', async () => {
             const req = { body: { email: '', password: '' } };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
@@ -54,6 +54,20 @@ describe('Unit Testing - UserGame / User API Territory', () => {
 
             expect(res.status).toHaveBeenCalledWith(404);
             expect(res.json).toHaveBeenCalledWith({ status: 404, success: false, message: "These credentials do not match our records" });
+        });
+
+        it('Should be login error when user service throw error "Internal Server Error"', async () => {
+            const req = { body: { email: '', password: '' } };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameService.login.mockImplementation(() => {
+                throw { message: "Internal Server Error" };
+            })
+
+            await UserGameController.login(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ status: 500, success: false, message: "Internal Server Error" });
         });
 
         it('Should be login success when user service return user', async () => {
@@ -101,7 +115,7 @@ describe('Unit Testing - UserGame / User API Territory', () => {
 
     describe('Unit Testing - Change Password Testing', () => {
 
-        it('Should be change password error when user service throw error', async () => {
+        it('Should be change password error when user service throw error "Wrong current password"', async () => {
             const req = { body: { current_password: 'a', new_password: 'b' } };
             const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
@@ -112,6 +126,19 @@ describe('Unit Testing - UserGame / User API Territory', () => {
 
             expect(res.status).toHaveBeenCalledWith(422);
             expect(res.json).toHaveBeenCalledWith({ status: 422, success: false, message: "Wrong current password" });
+        });
+
+        it('Should be change password error when user service throw error "Internal Server Error"', async () => {
+            const req = { body: { current_password: 'a', new_password: 'b' } };
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+            UserGameService.changePassword.mockImplementation(() => {
+                throw { message: "Internal Server Error" };
+            });
+            await UserGameController.changePassword(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ status: 500, success: false, message: "Internal Server Error" });
         });
 
         it('Should be change password success when user service return number of affected field', async () => {
